@@ -1,0 +1,44 @@
+#daemon off;
+worker_processes 1;
+
+user nobody nogroup;
+pid /tmp/nginx.pid;
+
+error_log /dev/stdout info;
+
+events {
+    worker_connections 1024;
+    accept_mutex off; # set to 'on' if nginx worker_processes > 1
+    use epoll;
+}
+
+http {
+    include mime.types;
+    default_type application/octet-stream;
+    access_log /dev/stdout combined;
+    sendfile on;
+
+    upstream app_server {
+        # For a TCP configuration:
+        server crusca_host:$CRUSCA_FLASK_PORT fail_timeout=0;
+    }
+
+    server {
+        listen 80;
+        listen 443 default_server ssl;
+        server_name $CRUSCA_NGINX_SERVER_NAME;
+
+        client_max_body_size 10M;
+
+        keepalive_timeout 5;
+
+        location / {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Host $http_host;
+            proxy_redirect off;
+
+            proxy_pass   http://app_server;
+        }
+
+    }
+}

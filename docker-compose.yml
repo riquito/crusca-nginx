@@ -1,0 +1,20 @@
+version: '2'
+services:
+    nginx:
+        image: nginx:1.9
+        volumes:
+            - ./nginx.conf.template:/etc/nginx/conf.d/nginx.conf.template:ro
+        ports:
+            - "80:80"
+            - "443:443"
+        environment:
+            CRUSCA_FLASK_PORT: "3031"
+            CRUSCA_NGINX_SERVER_NAME: "${CRUSCA_NGINX_SERVER_NAME}"
+        links:
+            - crusca:crusca_host
+        command: /bin/bash -c "envsubst '$$CRUSCA_FLASK_PORT:$$CRUSCA_NGINX_SERVER_NAME' < /etc/nginx/conf.d/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+    crusca:
+        image: riquito/crusca
+        expose:
+            - "3031"
+            - "9091"
