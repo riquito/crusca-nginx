@@ -18,3 +18,5 @@ services:
         expose:
             - "3031"
             - "9091"
+        volumes:
+            - ./crusca.yml:/usr/src/app/config/config.yml:ro

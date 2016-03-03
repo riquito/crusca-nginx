@@ -1,0 +1,36 @@
+COMMON: &common
+    SECRET_KEY: insecure
+    RULES:
+        capital_letter: ~
+        bad_start: ['fixed', 'added']
+        ending_dot: false
+    AUTH:
+        riquito/crusca : 
+            auth_token: foo
+            secret_key: bar
+
+
+DEVELOPMENT: &development
+    <<: *common
+    DEBUG: True
+
+PRODUCTION: &production
+    <<: *common
+    AUTH:
+        riquito/crusca : 
+            auth_token: foo
+            secret_key: bar
+        riquito/valib:
+            auth_token: baz
+            secret_key: ram
+
+    # or setup some env variables
+    # 
+    # export CRUSCA_OWNERS_REPOS="riquito/crusca;riquito/valib"
+    #
+    # export CRUSCA_SECRET_KEY_RIQUITO_CRUSCA=foo
+    # export CRUSCA_AUTH_TOKEN_RIQUITO_CRUSCA=bar
+    # 
+    # export CRUSCA_SECRET_KEY_RIQUITO_VALIB=baz
+    # export CRUSCA_AUTH_TOKEN_RIQUITO_VALIB=ram
+
